@@ -50,12 +50,14 @@ namespace Store
                 if (basket[place[0]].data == null)
                 {
                     basket[place[0]] = prodToAdd;
+                    basket[place[0]].key = place[0];
                     count++;
                     return;
                 }
                 if (basket[place[1]].data == null)
                 {
                     basket[place[1]] = prodToAdd;
+                    basket[place[1]].key = place[1];
                     count++;
                     return;
                 }

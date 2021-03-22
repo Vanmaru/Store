@@ -105,7 +105,9 @@ namespace Store
         }
         private void Swap(Node a, Node b)
         {
-
+            Product temp = a.data;
+            a.data = b.data;
+            b.data = temp;
         }
         public void SortByPrice() //NE PASHET!!!!!!!!!!!!!!!!!!!!!!!!
         {
@@ -116,9 +118,7 @@ namespace Store
                 {
                     if (toSort.data.Price < toSort.next.data.Price)
                     {
-                        Node temp = toSort;
-                        toSort = toSort.next;
-                        toSort.next = temp;
+                        Swap(toSort, toSort.next);
                     }
                 }
                 if (i == 0) start = toSort;

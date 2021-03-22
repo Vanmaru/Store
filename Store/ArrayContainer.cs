@@ -44,7 +44,6 @@ namespace Store
                 for (int j = 0; j < data.Length - i - 1; j++)
                     if (data[j].Price < data[j + 1].Price)
                     {
-                        // swap temp and arr[i] 
                         Product temp = data[j];
                         data[j] = data[j + 1];
                         data[j + 1] = temp;
