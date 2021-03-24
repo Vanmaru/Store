@@ -50,14 +50,14 @@ namespace Store
                 if (basket[place[0]].data == null)
                 {
                     basket[place[0]] = prodToAdd;
-                    basket[place[0]].key = place[0];
+                    //basket[place[0]].key = place[0];
                     count++;
                     return;
                 }
                 if (basket[place[1]].data == null)
                 {
                     basket[place[1]] = prodToAdd;
-                    basket[place[1]].key = place[1];
+                    //basket[place[1]].key = place[1];
                     count++;
                     return;
                 }
@@ -71,6 +71,57 @@ namespace Store
         {
             basket[index].key = 0;
             basket[index].data = null;
+        }
+        public Product this[int key] => FindByKey(key);
+
+        private Product FindByKey(int key)
+        {
+            for (int i = basket.Length/2, j = i; i < basket.Length | j < 0; i++, j--)
+            {
+                if (basket[i].key==key)
+                {
+                    return basket[i].data;
+                }
+                if (basket[j].key==key)
+                {
+                    return basket[j].data;
+                }
+            }
+            throw new ArgumentOutOfRangeException(
+                nameof(key),
+                $"Key {key} not found");
+        }
+        public Product this[string name] => FindByName(name);
+
+        private Product FindByName(string name)
+        {
+            for (int i = 0; i < basket.Length; i++)
+            {
+                if (basket[i].data.Name == name)
+                {
+                    return basket[i].data;
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(
+                nameof(name),
+                $"Name {name} does not exist in container");
+        }
+        public Product this[decimal price] => FindByPrice(price);
+
+        private Product FindByPrice(decimal price)
+        {
+            for (int i = 0; i < basket.Length; i++)
+            {
+                if (basket[i].data.Price == price)
+                {
+                    return basket[i].data;
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(
+                nameof(price),
+                $"Name {price} does not exist in container");
         }
     }
 }

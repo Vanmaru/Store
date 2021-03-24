@@ -109,7 +109,7 @@ namespace Store
             a.data = b.data;
             b.data = temp;
         }
-        public void SortByPrice() //NE PASHET!!!!!!!!!!!!!!!!!!!!!!!!
+        public void SortByPrice()
         {
             Node toSort = start;
             for (int i = 0; i < count - 1; i++)
@@ -130,6 +130,50 @@ namespace Store
             {
                 PopHead();
             }
+        }
+        public Product this[int index] => FindByIndex(index);
+        private Product FindByIndex(int index)
+        {
+            if (index > Count|index < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(index),
+                    $"Index {index} out of range");
+            }
+            Node prom = GetElement(index);
+            return prom.data;
+        }
+        public Product this[string name] => FindByName(name);
+        private Product FindByName(string name)
+        {
+            Node prom = start;
+            for (int i = 0; i < Count; i++)
+            {
+                if (prom.data.Name==name)
+                {
+                    return prom.data;
+                }
+                prom = prom.next;
+            }
+            throw new ArgumentOutOfRangeException(
+                nameof(name),
+                $"Name {name} does not exist in container");
+        }
+        public Product this[decimal price] => FindByPrice(price);
+        private Product FindByPrice(decimal price)
+        {
+            Node prom = start;
+            for (int i = 0; i < Count; i++)
+            {
+                if (prom.data.Price == price)
+                {
+                    return prom.data;
+                }
+                prom = prom.next;
+            }
+            throw new ArgumentOutOfRangeException(
+                nameof(price),
+                $"Name {price} does not exist in container");
         }
     }
 }

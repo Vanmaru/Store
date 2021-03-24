@@ -49,5 +49,42 @@ namespace Store
                         data[j + 1] = temp;
                     }
         }
+        public Product this[int index]
+        {
+            get => data[index];
+            set => data[index] = value;
+        }
+        public Product this[string name] => FindByName(name);
+
+        private Product FindByName(string name)
+        {
+            for (int j = 0; j < data.Length; j++)
+            {
+                if (data[j].Name == name)
+                {
+                    return data[j];
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(
+                nameof(name),
+                $"Name {name} does not exist in container");
+        }
+        public Product this[decimal price] => FindByPrice(price);
+
+        private Product FindByPrice(decimal price)
+        {
+            for (int j = 0; j < data.Length; j++)
+            {
+                if (data[j].Price == price)
+                {
+                    return data[j];
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(
+                nameof(price),
+                $"Item with price {price} was not found");
+        }
     }
 }
