@@ -25,9 +25,9 @@ namespace Store
         Node start = null;
         Node finish = null;
         int count = 0;
-        public override int Count 
-        { 
-            get { return count; } 
+        public override int Count
+        {
+            get { return count; }
             protected set { if (value >= 0) count = value; }
         }
         public override void Add(Product p)
@@ -85,7 +85,7 @@ namespace Store
         private Node GetElement(int index)
         {
             Node prom = start;
-            for (int i = 0; i < index ; i++)
+            for (int i = 0; i < index; i++)
             {
                 prom = prom.next;
             }
@@ -109,9 +109,10 @@ namespace Store
             a.data = b.data;
             b.data = temp;
         }
-        public void SortByPrice() //NE PASHET!!!!!!!!!!!!!!!!!!!!!!!!
+        public void SortByPrice()
         {
             Node toSort = start;
+            //for(Node toSort1=start; toSort1.next!=null;toSort1=toSort1.next)
             for (int i = 0; i < count - 1; i++)
             {
                 for (int j = 0; j < count - i - 1; j++)
@@ -130,6 +131,68 @@ namespace Store
             {
                 PopHead();
             }
+        }
+        public Product this[int index] 
+        {
+            get
+            {
+                return FindByIndex(index);
+            }
+        }
+        private Product FindByIndex(int index)
+        {
+            if (index > Count|index < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(index),
+                    $"Index {index} out of range");
+            }
+            Node prom = GetElement(index);
+            return prom.data;
+        }
+        public Product this[string name]
+        {
+            get
+            {
+                return FindByName(name);
+            }
+        }
+        private Product FindByName(string name)
+        {
+            Node prom = start;
+            for (int i = 0; i < Count; i++)
+            {
+                if (prom.data.Name==name)
+                {
+                    return prom.data;
+                }
+                prom = prom.next;
+            }
+            throw new ArgumentOutOfRangeException(
+                nameof(name),
+                $"Name {name} does not exist in container");
+        }
+        public Product this[decimal price]
+        {
+            get
+            {
+                return FindByPrice(price);
+            }
+        }
+        private Product FindByPrice(decimal price)
+        {
+            Node prom = start;
+            for (int i = 0; i < Count; i++)
+            {
+                if (prom.data.Price == price)
+                {
+                    return prom.data;
+                }
+                prom = prom.next;
+            }
+            throw new ArgumentOutOfRangeException(
+                nameof(price),
+                $"Name {price} does not exist in container");
         }
     }
 }
