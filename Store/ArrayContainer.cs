@@ -54,7 +54,13 @@ namespace Store
             get => data[index];
             set => data[index] = value;
         }
-        public Product this[string name] => FindByName(name);
+        public Product this[string name]
+        {
+            get
+            {
+                return FindByName(name);
+            }
+        }
 
         private Product FindByName(string name)
         {
@@ -70,8 +76,13 @@ namespace Store
                 nameof(name),
                 $"Name {name} does not exist in container");
         }
-        public Product this[decimal price] => FindByPrice(price);
-
+        public Product this[decimal price]
+        {
+            get
+            {
+                return FindByPrice(price);
+            }
+        }
         private Product FindByPrice(decimal price)
         {
             for (int j = 0; j < data.Length; j++)

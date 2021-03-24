@@ -12,7 +12,7 @@ namespace Store
             Product secondGame = new MultiVideoGame("Valorant", 0, "PC", "FPS-shooter", "5vs5");
             Product firstBoardGame = new BoardGameForAdult("Poker", 1680, "Card-game", "Cards&chips", "Gambling");
             Product secondBoardGame = new BoardGameForKids("Monopoly", 50, "Game with field", "Field&cube", "Education&Entertaiment");
-            
+
             //ListContainer basket = new ListContainer();
             //basket.Add(firstGame);
             //basket.Add(firstBoardGame);
@@ -32,8 +32,8 @@ namespace Store
             //Console.WriteLine(kr[1]);
             //Console.WriteLine(kr[1680M]);
             //Console.WriteLine(kr["Dark Souls"]);
-
-            HashTableContainer hashTabCont = new HashTableContainer();
+            
+            HashTableContainer hashTabCont = new HashTableContainer(50);
             hashTabCont.Add(firstGame);
             hashTabCont.Add(firstGame);
             hashTabCont.Add(firstGame);
