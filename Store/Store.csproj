@@ -46,6 +46,8 @@
     <Compile Include="ArrayContainer.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="HashTableContainer.cs" />
+    <Compile Include="helper\Exceptions.cs" />
+    <Compile Include="IName.cs" />
     <Compile Include="ListContainer.cs" />
     <Compile Include="Product.cs" />
     <Compile Include="Program.cs" />

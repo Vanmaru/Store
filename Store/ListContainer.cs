@@ -84,6 +84,10 @@ namespace Store
         }
         private Node GetElement(int index)
         {
+            if (index<0 || index > count)
+                throw new ArgumentOutOfRangeException(
+                nameof(index),
+                $"Index {index} out of range");
             Node prom = start;
             for (int i = 0; i < index; i++)
             {
@@ -93,6 +97,8 @@ namespace Store
         }
         public void Remove(int index)
         {
+            
+
             Node toDelete = GetElement(index);
 
             if (toDelete == start)
@@ -109,7 +115,7 @@ namespace Store
             a.data = b.data;
             b.data = temp;
         }
-        public void SortByPrice()
+        public void Sort()
         {
             Node toSort = start;
             //for(Node toSort1=start; toSort1.next!=null;toSort1=toSort1.next)
@@ -117,7 +123,7 @@ namespace Store
             {
                 for (int j = 0; j < count - i - 1; j++)
                 {
-                    if (toSort.data.Price < toSort.next.data.Price)
+                    if (toSort.data.Name.CompareTo(toSort.next.data.Name)>0)
                     {
                         Swap(toSort, toSort.next);
                     }
@@ -172,27 +178,32 @@ namespace Store
                 nameof(name),
                 $"Name {name} does not exist in container");
         }
-        public Product this[decimal price]
+
+        public override int CompareTo(object obj)
         {
-            get
-            {
-                return FindByPrice(price);
-            }
+            throw new NotImplementedException();
         }
-        private Product FindByPrice(decimal price)
-        {
-            Node prom = start;
-            for (int i = 0; i < Count; i++)
-            {
-                if (prom.data.Price == price)
-                {
-                    return prom.data;
-                }
-                prom = prom.next;
-            }
-            throw new ArgumentOutOfRangeException(
-                nameof(price),
-                $"Name {price} does not exist in container");
-        }
+        //public Product this[decimal price]
+        //{
+        //    get
+        //    {
+        //        return FindByPrice(price);
+        //    }
+        //}
+        //private Product FindByPrice(decimal price)
+        //{
+        //    Node prom = start;
+        //    for (int i = 0; i < Count; i++)
+        //    {
+        //        if (prom.data.Price == price)
+        //        {
+        //            return prom.data;
+        //        }
+        //        prom = prom.next;
+        //    }
+        //    throw new ArgumentOutOfRangeException(
+        //        nameof(price),
+        //        $"Name {price} does not exist in container");
+        //}
     }
 }

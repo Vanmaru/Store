@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    class ArrayContainer:Container
+    class ArrayContainer : Container
     {
         private Product[] data;
         public override int Count { get { return data != null ? data.Length : 0; } protected set { } }
@@ -21,7 +21,7 @@ namespace Store
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < data.Length ; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 sb.Append(data[i].ToString()).Append("\n");
             }
@@ -29,12 +29,16 @@ namespace Store
         }
         public void Remove(int index)
         {
+            if (index < 0 || index >= data.Length)
+                throw new ArgumentOutOfRangeException(
+                nameof(index),
+                $"Index {index} out of array range");
 
             Product[] temp = new Product[Count - 1];
             for (int i = 0, j = 0; i < data.Length; i++)
             {
                 if (i == index) { i++; }
-                    temp[j++] = data[i];
+                temp[j++] = data[i];
             }
 
         }
@@ -51,8 +55,14 @@ namespace Store
         }
         public Product this[int index]
         {
-            get => data[index];
-            set => data[index] = value;
+            get
+            {
+                return data[index];
+            }
+            set
+            {
+                data[index] = value;
+            }
         }
         public Product this[string name]
         {
@@ -76,26 +86,30 @@ namespace Store
                 nameof(name),
                 $"Name {name} does not exist in container");
         }
-        public Product this[decimal price]
-        {
-            get
-            {
-                return FindByPrice(price);
-            }
-        }
-        private Product FindByPrice(decimal price)
-        {
-            for (int j = 0; j < data.Length; j++)
-            {
-                if (data[j].Price == price)
-                {
-                    return data[j];
-                }
-            }
 
-            throw new ArgumentOutOfRangeException(
-                nameof(price),
-                $"Item with price {price} was not found");
+        public override int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
         }
+        //    public Product this[decimal price]
+        //    {
+        //        get
+        //        {
+        //            return FindByPrice(price);
+        //        }
+        //    }
+        //    private Product FindByPrice(decimal price)
+        //    {
+        //        for (int j = 0; j < data.Length; j++)
+        //        {
+        //            if (data[j].Price == price)
+        //            {
+        //                return data[j];
+        //            }
+        //        }
+        //        throw new ArgumentOutOfRangeException(
+        //            nameof(price),
+        //            $"Item with price {price} was not found");
+        //    }
     }
 }

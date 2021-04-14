@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Store.helper;
 
 namespace Store
 {
-    public abstract class Product
+    public abstract class Product:IName
     {
         private string name;
         private decimal price;
@@ -24,15 +25,22 @@ namespace Store
 
         public decimal Price
         {
-            get{ return price;}
+            get
+            {
+                if (price < 0)
+                    throw new NegativeValueException("negative price value");
+                return price;
+            }
             set{price = value;}
         }
+
+        public abstract int CompareTo(object obj);
+
         public override string ToString()
         {
             return $"Name {name}, Price {price}";
         }
     }
-
     public class VideoGame : Product
     {
         public VideoGame(string name, decimal price, string platform, string genre):base(name,price)
@@ -69,6 +77,11 @@ namespace Store
         public override string ToString()
         {
             return $"{base.ToString()}, Platform: {platform}, Genre: {genre}";
+        }
+
+        public override int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -108,6 +121,11 @@ namespace Store
         public override string ToString()
         {
             return $"{base.ToString()}, Kind: {kind}, Attributes: {attributes}";
+        }
+
+        public override int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
         }
     }
     public class BoardGameForAdult : BoardGame
@@ -169,6 +187,8 @@ namespace Store
         {
             get
             {
+                if (plotDuration <= 0)
+                    throw new NegativeValueException("negative plot duration");
                 return plotDuration;
             }
             set

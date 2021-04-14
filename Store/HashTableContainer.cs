@@ -47,6 +47,13 @@ namespace Store
         }
         public override void Add(Product p)
         {
+            if (basket.Length >= count)
+            {
+                throw new ArgumentOutOfRangeException(
+                nameof(basket.Length),
+                $"Count of elements {basket.Length}. Hash-table overflow");
+            }
+
             HashNode prodToAdd;
             prodToAdd.data = p;
             prodToAdd.key = Hash(p);
@@ -69,7 +76,9 @@ namespace Store
                 place[0]++;
                 place[1]--;
             }
-            Console.WriteLine("Something went wrong");
+            throw new ArgumentOutOfRangeException(
+                nameof(prodToAdd.key),
+                $"No room for element {prodToAdd.key}");
         }
         public void Remove(int index)
         {
@@ -123,27 +132,32 @@ namespace Store
                 nameof(name),
                 $"Name {name} does not exist in container");
         }
-        public Product this[decimal price]
-        {
-            get
-            {
-                return FindByPrice(price);
-            }
-        }
 
-        private Product FindByPrice(decimal price)
+        public override int CompareTo(object obj)
         {
-            for (int i = 0; i < basket.Length; i++)
-            {
-                if (basket[i].data.Price == price)
-                {
-                    return basket[i].data;
-                }
-            }
-
-            throw new ArgumentOutOfRangeException(
-                nameof(price),
-                $"Name {price} does not exist in container");
+            throw new NotImplementedException();
         }
+        //public Product this[decimal price]
+        //{
+        //    get
+        //    {
+        //        return FindByPrice(price);
+        //    }
+        //}
+
+        //private Product FindByPrice(decimal price)
+        //{
+        //    for (int i = 0; i < basket.Length; i++)
+        //    {
+        //        if (basket[i].data.Price == price)
+        //        {
+        //            return basket[i].data;
+        //        }
+        //    }
+
+        //    throw new ArgumentOutOfRangeException(
+        //        nameof(price),
+        //        $"Name {price} does not exist in container");
+        //}
     }
 }

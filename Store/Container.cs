@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    abstract class Container
+    abstract class Container:IName
     {
         public abstract void Add(Product p);
+        public abstract int CompareTo(object obj);
+
         public abstract int Count{ get; protected set; }
     }
 }

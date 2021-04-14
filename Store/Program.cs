@@ -22,26 +22,33 @@ namespace Store
             //Console.WriteLine(basket.ToString());
             //Console.WriteLine(basket[1]);
 
-            //ArrayContainer kr = new ArrayContainer();
-            //kr.Add(firstGame);
-            //kr.Add(secondGame);
-            //kr.Add(firstBoardGame);
-            //kr.Add(secondBoardGame);
-            //kr.Sort();
-            //Console.WriteLine(kr.ToString());
-            //Console.WriteLine(kr[1]);
-            //Console.WriteLine(kr[1680M]);
-            //Console.WriteLine(kr["Dark Souls"]);
+            ArrayContainer kr = new ArrayContainer();
+            kr.Add(firstGame);
+            kr.Add(secondGame);
+            kr.Add(firstBoardGame);
+            kr.Add(secondBoardGame);
+            kr.Sort();
+            Console.WriteLine(kr.ToString());
+            Console.WriteLine(kr[1]);
+            Console.WriteLine(kr["Dark Souls"]);
             
-            HashTableContainer hashTabCont = new HashTableContainer(50);
-            hashTabCont.Add(firstGame);
-            hashTabCont.Add(firstGame);
-            hashTabCont.Add(firstGame);
-            hashTabCont.Add(secondBoardGame);
-            Console.WriteLine(hashTabCont.ToString());
-            Console.WriteLine(hashTabCont[1]);
-            Console.WriteLine(hashTabCont[1680M]);
-            Console.WriteLine(hashTabCont["Dark Souls"]);
+            //HashTableContainer hashTabCont = new HashTableContainer(50);
+            //try
+            //{
+            //    hashTabCont.Add(firstGame);
+            //    hashTabCont.Add(firstGame);
+            //    hashTabCont.Add(firstGame);
+            //    hashTabCont.Add(secondBoardGame);
+            //    Console.WriteLine(hashTabCont.ToString());
+            //    Console.WriteLine(hashTabCont[1]);
+            //    Console.WriteLine(hashTabCont[1680M]);
+            //    Console.WriteLine(hashTabCont["Dark Souls"]);
+            //}
+            //catch (Exception e)
+            //{
+
+            //    Console.WriteLine(e.Message);
+            //}
             Console.ReadKey();
         }
     }
