@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Store.helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    class ArrayContainer : Container
+    class ArrayContainer<T> : IOrdereableContainer<T> where T : IName<T>
     {
-        private Product[] data;
-        public override int Count { get { return data != null ? data.Length : 0; } protected set { } }
-        public override void Add(Product p)
+        private T[] data;
+        public int Count { get { return data != null ? data.Length : 0; } protected set { } }
+        public void Add(T p)
         {
-            Product[] tempData = new Product[Count + 1];
+            T[] tempData = new T[Count + 1];
             for (int i = 0; i < Count; i++)
                 tempData[i] = data[i];
             tempData[Count] = p;
@@ -30,11 +31,11 @@ namespace Store
         public void Remove(int index)
         {
             if (index < 0 || index >= data.Length)
-                throw new ArgumentOutOfRangeException(
+                throw new ArgumentException(
                 nameof(index),
                 $"Index {index} out of array range");
 
-            Product[] temp = new Product[Count - 1];
+            T[] temp = new T[Count - 1];
             for (int i = 0, j = 0; i < data.Length; i++)
             {
                 if (i == index) { i++; }
@@ -42,29 +43,43 @@ namespace Store
             }
 
         }
+        public void Add(IContainer<T> container)
+        {
+            for (int i = 0; i < container.Count; i++)
+            {
+                this.Add(container[i]);
+            }
+        }
         public void Sort()
         {
             for (int i = 0; i < data.Length - 1; i++)
                 for (int j = 0; j < data.Length - i - 1; j++)
-                    if (data[j].Price < data[j + 1].Price)
+                    if (data[j].CompareTo(data[j + 1]) > 1)
                     {
-                        Product temp = data[j];
+                        T temp = data[j];
                         data[j] = data[j + 1];
                         data[j + 1] = temp;
                     }
         }
-        public Product this[int index]
+        public T this[int index]
         {
             get
             {
-                return data[index];
+                try
+                {
+                    return data[index];
+                }
+                catch(Exception e)
+                {
+                    throw new IndexerException("Array list indexer exception", e);
+                }
             }
             set
             {
                 data[index] = value;
             }
         }
-        public Product this[string name]
+        public T this[string name]
         {
             get
             {
@@ -72,7 +87,7 @@ namespace Store
             }
         }
 
-        private Product FindByName(string name)
+        private T FindByName(string name)
         {
             for (int j = 0; j < data.Length; j++)
             {
@@ -82,14 +97,9 @@ namespace Store
                 }
             }
 
-            throw new ArgumentOutOfRangeException(
+            throw new ArgumentException(
                 nameof(name),
                 $"Name {name} does not exist in container");
-        }
-
-        public override int CompareTo(object obj)
-        {
-            throw new NotImplementedException();
         }
         //    public Product this[decimal price]
         //    {

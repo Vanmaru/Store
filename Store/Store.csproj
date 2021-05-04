@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayContainer.cs" />
-    <Compile Include="Container.cs" />
+    <Compile Include="IContainer.cs" />
     <Compile Include="HashTableContainer.cs" />
     <Compile Include="helper\Exceptions.cs" />
     <Compile Include="IName.cs" />

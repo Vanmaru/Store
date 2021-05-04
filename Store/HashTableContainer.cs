@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Store
 {
-    class HashTableContainer : Container
+    class HashTableContainer<T> : IContainer<T> where T : IName<T>
     {
         int count = 0;
         struct HashNode{
             public int key;
-            public Product data;
+            public T data;
         }
 
         private HashNode[] basket;
@@ -34,25 +31,22 @@ namespace Store
             }
             return sb.ToString();
         }
-        public override int Count
+        public int Count
         {
             get { return count; }
             protected set { if (value >= 0) count = value; }
         }
-        private int Hash(Product p)
+        private int Hash(T p)
         {
             int key;
             key = p.GetHashCode();
             return key % basket.Length;
         }
-        public override void Add(Product p)
+        public void Add(T p)
         {
             if (basket.Length >= count)
-            {
-                throw new ArgumentOutOfRangeException(
-                nameof(basket.Length),
+                throw new OverflowException(
                 $"Count of elements {basket.Length}. Hash-table overflow");
-            }
 
             HashNode prodToAdd;
             prodToAdd.data = p;
@@ -82,10 +76,19 @@ namespace Store
         }
         public void Remove(int index)
         {
-            basket[index].key = 0;
-            basket[index].data = null;
+            try
+            {
+                basket[index].key = 0;
+                basket[index].data = default;
+            }
+            catch(Exception e)
+            {
+                throw new ArgumentException(
+                nameof(index),
+                $"Index {index} does not exist in container", e);
+            }
         }
-        public Product this[int key]
+        public T this[int key]
         {
             get
             {
@@ -93,7 +96,7 @@ namespace Store
             }
         }
 
-        private Product FindByKey(int key)
+        private T FindByKey(int key)
         {
             for (int i = basket.Length/2, j = i; i < basket.Length | j < 0; i++, j--)
             {
@@ -106,11 +109,11 @@ namespace Store
                     return basket[j].data;
                 }
             }
-            throw new ArgumentOutOfRangeException(
+            throw new ArgumentException(
                 nameof(key),
                 $"Key {key} not found");
         }
-        public Product this[string name]
+        public T this[string name]
         {
             get
             {
@@ -118,7 +121,7 @@ namespace Store
             }
         }
 
-        private Product FindByName(string name)
+        private T FindByName(string name)
         {
             for (int i = 0; i < basket.Length; i++)
             {
@@ -128,12 +131,12 @@ namespace Store
                 }
             }
 
-            throw new ArgumentOutOfRangeException(
+            throw new ArgumentException(
                 nameof(name),
                 $"Name {name} does not exist in container");
         }
 
-        public override int CompareTo(object obj)
+        public void Add(IContainer<T> container)
         {
             throw new NotImplementedException();
         }

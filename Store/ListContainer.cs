@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    class ListContainer : Container
+    class ListContainer<T> : IOrdereableContainer<T> where T: IName<T>
     {
         private class Node
         {
             public Node prev;
             public Node next;
-            public Product data;
-            public Node(Product p)
+            public T data;
+            public Node(T p)
             {
                 data = p;
             }
@@ -25,12 +25,12 @@ namespace Store
         Node start = null;
         Node finish = null;
         int count = 0;
-        public override int Count
+        public int Count
         {
             get { return count; }
             protected set { if (value >= 0) count = value; }
         }
-        public override void Add(Product p)
+        public void Add(T p)
         {
             Node node = new Node(p);
             if (finish == null)
@@ -46,6 +46,13 @@ namespace Store
             }
             count++;
         }
+        public void Add(IContainer<T> container)
+        {
+            for(int i=0;i<container.Count;i++)
+            {
+                this.Add(container[i]);
+            }
+        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -55,32 +62,32 @@ namespace Store
             }
             return sb.ToString();
         }
-        private Product PopHead()
+        private T PopHead()
         {
             if (start != null)
             {
-                Product p = start.data;
+                T p = start.data;
                 start = start.next;
                 if (start != null)
                     start.prev = null;
                 Count--;
                 return p;
             }
-            return null;
+            return default(T);
 
         }
-        private Product PopFinish()
+        private T PopFinish()
         {
             if (finish != null)
             {
-                Product p = finish.data;
+                T p = finish.data;
                 finish = finish.prev;
                 if (finish != null)
                     finish.next = null;
                 Count--;
                 return p;
             }
-            return null;
+            return default;
         }
         private Node GetElement(int index)
         {
@@ -97,7 +104,10 @@ namespace Store
         }
         public void Remove(int index)
         {
-            
+            if(index>count)
+                throw new ArgumentException(
+                    nameof(index),
+                    $"Index {index} does not exist");
 
             Node toDelete = GetElement(index);
 
@@ -111,24 +121,21 @@ namespace Store
         }
         private void Swap(Node a, Node b)
         {
-            Product temp = a.data;
+            T temp = a.data;
             a.data = b.data;
             b.data = temp;
         }
         public void Sort()
         {
-            Node toSort = start;
-            //for(Node toSort1=start; toSort1.next!=null;toSort1=toSort1.next)
-            for (int i = 0; i < count - 1; i++)
+            for(Node i=start; i.next!=null;i=i.next)
             {
-                for (int j = 0; j < count - i - 1; j++)
+                for (Node j=i; j.next!=null; j=j.next)
                 {
-                    if (toSort.data.Name.CompareTo(toSort.next.data.Name)>0)
+                    if (j.data.Name.CompareTo(j.next.data.Name)>0)
                     {
-                        Swap(toSort, toSort.next);
+                        Swap(j, j.next);
                     }
                 }
-                if (i == 0) start = toSort;
             }
         }
         public void Clear()
@@ -138,32 +145,32 @@ namespace Store
                 PopHead();
             }
         }
-        public Product this[int index] 
+        public T this[int index] 
         {
             get
             {
                 return FindByIndex(index);
             }
         }
-        private Product FindByIndex(int index)
+        private T FindByIndex(int index)
         {
             if (index > Count|index < 0)
             {
-                throw new ArgumentOutOfRangeException(
+                throw new ArgumentException(
                     nameof(index),
                     $"Index {index} out of range");
             }
             Node prom = GetElement(index);
             return prom.data;
         }
-        public Product this[string name]
+        public T this[string name]
         {
             get
             {
                 return FindByName(name);
             }
         }
-        private Product FindByName(string name)
+        private T FindByName(string name)
         {
             Node prom = start;
             for (int i = 0; i < Count; i++)
@@ -179,10 +186,6 @@ namespace Store
                 $"Name {name} does not exist in container");
         }
 
-        public override int CompareTo(object obj)
-        {
-            throw new NotImplementedException();
-        }
         //public Product this[decimal price]
         //{
         //    get

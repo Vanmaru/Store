@@ -8,10 +8,10 @@ namespace Store
     {
         static void Main(string[] args)
         {
-            Product firstGame = new SingleVideoGame("Dark Souls",404,"PC","RPG",60);
-            Product secondGame = new MultiVideoGame("Valorant", 0, "PC", "FPS-shooter", "5vs5");
-            Product firstBoardGame = new BoardGameForAdult("Poker", 1680, "Card-game", "Cards&chips", "Gambling");
-            Product secondBoardGame = new BoardGameForKids("Monopoly", 50, "Game with field", "Field&cube", "Education&Entertaiment");
+            SingleVideoGame firstGame = new SingleVideoGame("Dark Souls",404,"PC","RPG",60);
+            MultiVideoGame secondGame = new MultiVideoGame("Valorant", 0, "PC", "FPS-shooter", "5vs5");
+            BoardGameForAdult firstBoardGame = new BoardGameForAdult("Poker", 1680, "Card-game", "Cards&chips", true);
+            BoardGameForKids secondBoardGame = new BoardGameForKids("Monopoly", 50, "Game with field", "Field&cube", "Education&Entertaiment");
 
             //ListContainer basket = new ListContainer();
             //basket.Add(firstGame);
@@ -22,16 +22,31 @@ namespace Store
             //Console.WriteLine(basket.ToString());
             //Console.WriteLine(basket[1]);
 
-            ArrayContainer kr = new ArrayContainer();
+            ArrayContainer<Product> kr = new ArrayContainer<Product>();
             kr.Add(firstGame);
             kr.Add(secondGame);
             kr.Add(firstBoardGame);
             kr.Add(secondBoardGame);
             kr.Sort();
-            Console.WriteLine(kr.ToString());
-            Console.WriteLine(kr[1]);
-            Console.WriteLine(kr["Dark Souls"]);
-            
+            //Console.WriteLine(kr.ToString());
+            //Console.WriteLine(kr[1]);
+            //Console.WriteLine(kr["Dark Souls"]);
+
+            IOrdereableContainer<Product> lc = new ListContainer<Product>();
+            lc.Add(new BoardGameForAdult("XXX", 100, "kinda", "some", true));
+            lc.Add(new BoardGameForAdult("XL", 99, "kinda", "some", true));
+            Console.WriteLine(lc.ToString());
+            lc.Add(kr);
+            lc.Sort();
+            Console.WriteLine(lc.ToString());
+            try
+            {
+                Console.WriteLine(lc[20].ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
             //HashTableContainer hashTabCont = new HashTableContainer(50);
             //try
             //{
@@ -46,7 +61,6 @@ namespace Store
             //}
             //catch (Exception e)
             //{
-
             //    Console.WriteLine(e.Message);
             //}
             Console.ReadKey();
