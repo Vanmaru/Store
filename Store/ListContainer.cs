@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Store.helper;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    class ListContainer<T> : IOrdereableContainer<T> where T: IName<T>
+    class ListContainer<T> : IEnumerable, IOrdereableContainer<T> where T: IName<T>
     {
-        private class Node
+        internal class Node
         {
             public Node prev;
             public Node next;
@@ -73,7 +75,7 @@ namespace Store
                 Count--;
                 return p;
             }
-            return default(T);
+            return default;
 
         }
         private T PopFinish()
@@ -208,5 +210,13 @@ namespace Store
         //        nameof(price),
         //        $"Name {price} does not exist in container");
         //}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (IEnumerator)GetEnumerator();
+        }
+        public ListContainerEnum<T> GetEnumerator()
+        {
+            return new ListContainerEnum<T>(this);
+        }
     }
 }

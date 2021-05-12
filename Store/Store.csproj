@@ -44,6 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayContainer.cs" />
+    <Compile Include="helper\ArrayContainerEnum.cs" />
+    <Compile Include="helper\ListContainerEnum.cs" />
+    <Compile Include="helper\HashTableContainerEnum.cs" />
     <Compile Include="IContainer.cs" />
     <Compile Include="HashTableContainer.cs" />
     <Compile Include="helper\Exceptions.cs" />

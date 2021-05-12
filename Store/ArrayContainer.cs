@@ -1,5 +1,6 @@
 ﻿using Store.helper;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    class ArrayContainer<T> : IOrdereableContainer<T> where T : IName<T>
+    class ArrayContainer<T> : IEnumerable, IOrdereableContainer<T> where T : IName<T>
     {
-        private T[] data;
+        internal T[] data;
         public int Count { get { return data != null ? data.Length : 0; } protected set { } }
         public void Add(T p)
         {
@@ -121,5 +122,13 @@ namespace Store
         //            nameof(price),
         //            $"Item with price {price} was not found");
         //    }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (IEnumerator)GetEnumerator();
+        }
+        public ArrayContainerEnum<T> GetEnumerator()
+        {
+            return new ArrayContainerEnum<T>(this);
+        }
     }
 }

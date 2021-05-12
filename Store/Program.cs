@@ -22,31 +22,35 @@ namespace Store
             //Console.WriteLine(basket.ToString());
             //Console.WriteLine(basket[1]);
 
-            ArrayContainer<Product> kr = new ArrayContainer<Product>();
-            kr.Add(firstGame);
-            kr.Add(secondGame);
-            kr.Add(firstBoardGame);
-            kr.Add(secondBoardGame);
+            ArrayContainer<Product> kr = new ArrayContainer<Product>
+            {
+                firstGame,
+                secondGame,
+                firstBoardGame,
+                secondBoardGame
+            };
             kr.Sort();
             //Console.WriteLine(kr.ToString());
             //Console.WriteLine(kr[1]);
             //Console.WriteLine(kr["Dark Souls"]);
+            foreach (var item in kr)
+            {
+                Console.WriteLine(item);
+            }
+            ListContainer<Product> lc = new ListContainer<Product>
+            {
+                new BoardGameForAdult("XXX", 100, "kinda", "some", true),
+                new BoardGameForAdult("XL", 99, "kinda", "some", true)
+            };
+            foreach (var item in lc)
+            {
+                Console.WriteLine(item);
+            }
+            //Console.WriteLine(lc.ToString());
+            //lc.Add(kr);
+            //lc.Sort();
+            //Console.WriteLine(lc.ToString());
 
-            IOrdereableContainer<Product> lc = new ListContainer<Product>();
-            lc.Add(new BoardGameForAdult("XXX", 100, "kinda", "some", true));
-            lc.Add(new BoardGameForAdult("XL", 99, "kinda", "some", true));
-            Console.WriteLine(lc.ToString());
-            lc.Add(kr);
-            lc.Sort();
-            Console.WriteLine(lc.ToString());
-            try
-            {
-                Console.WriteLine(lc[20].ToString());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
             //HashTableContainer hashTabCont = new HashTableContainer(50);
             //try
             //{
