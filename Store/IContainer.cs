@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    interface IContainer<T>
+    public interface IContainer<T>
     {
         int Count { get; }
         T this[int index] { get; }
@@ -15,7 +15,7 @@ namespace Store
         void Add(IContainer<T> container);
     }
 
-    interface IOrdereableContainer<T>:IContainer<T>
+    interface IOrdereableContainer<T> : IContainer<T>
     {
         void Sort();
 

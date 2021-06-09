@@ -44,12 +44,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayContainer.cs" />
+    <Compile Include="helper\ContainerEventArgs.cs" />
     <Compile Include="helper\ArrayContainerEnum.cs" />
+    <Compile Include="helper\Delegates.cs" />
     <Compile Include="helper\ListContainerEnum.cs" />
     <Compile Include="helper\HashTableContainerEnum.cs" />
+    <Compile Include="helper\Serializer.cs" />
     <Compile Include="IContainer.cs" />
     <Compile Include="HashTableContainer.cs" />
     <Compile Include="helper\Exceptions.cs" />
+    <Compile Include="ICustomSerializable.cs" />
     <Compile Include="IName.cs" />
     <Compile Include="ListContainer.cs" />
     <Compile Include="Product.cs" />

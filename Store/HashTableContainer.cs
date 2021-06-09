@@ -1,33 +1,37 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
+using Store.helper;
 
 namespace Store
 {
-    class HashTableContainer<T> : IContainer<T> where T : IName<T>
+    internal struct HashNode<T>
+    {
+        public int key;
+        public T data;
+    }
+    class HashTableContainer<T> : IEnumerable, IContainer<T>, ICustomSerializable where T : IName<T>, ICustomSerializable
     {
         int count = 0;
-        struct HashNode{
-            public int key;
-            public T data;
-        }
 
-        private HashNode[] basket;
-
+        private HashNode<T>[] container;
         public HashTableContainer(int size)
         {
-            basket = new HashNode[size];
+            container = new HashNode<T>[size];
         }
-        
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < basket.Length; i++)
+            for (int i = 0; i < container.Length; i++)
             {
-                if (basket[i].data==null)
+                if (container[i].data == null)
                 {
                     continue;
                 }
-                sb.Append(basket[i].data.ToString()).Append("\n");
+                sb.Append(container[i].data.ToString()).Append("\n");
             }
             return sb.ToString();
         }
@@ -40,29 +44,29 @@ namespace Store
         {
             int key;
             key = p.GetHashCode();
-            return key % basket.Length;
+            return key % container.Length;
         }
         public void Add(T p)
         {
-            if (basket.Length >= count)
-                throw new OverflowException(
-                $"Count of elements {basket.Length}. Hash-table overflow");
+            if (container.Length == count)
+                throw new helper.OverflowException(
+                $"Count of elements {container.Length}. Hash-table overflow");
 
-            HashNode prodToAdd;
+            HashNode<T> prodToAdd;
             prodToAdd.data = p;
             prodToAdd.key = Hash(p);
             int[] place = { prodToAdd.key, prodToAdd.key };
-            while (prodToAdd.key!=basket.Length)
+            while (prodToAdd.key != container.Length)
             {
-                if (basket[place[0]].data == null)
+                if (container[place[0]].data == null)
                 {
-                    basket[place[0]] = prodToAdd;
+                    container[place[0]] = prodToAdd;
                     count++;
                     return;
                 }
-                if (basket[place[1]].data == null)
+                if (container[place[1]].data == null)
                 {
-                    basket[place[1]] = prodToAdd;
+                    container[place[1]] = prodToAdd;
                     count++;
                     return;
                 }
@@ -78,10 +82,10 @@ namespace Store
         {
             try
             {
-                basket[index].key = 0;
-                basket[index].data = default;
+                container[index].key = 0;
+                container[index].data = default;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new ArgumentException(
                 nameof(index),
@@ -98,15 +102,15 @@ namespace Store
 
         private T FindByKey(int key)
         {
-            for (int i = basket.Length/2, j = i; i < basket.Length | j < 0; i++, j--)
+            for (int i = container.Length / 2, j = i; i < container.Length | j < 0; i++, j--)
             {
-                if (basket[i].key==key)
+                if (container[i].key == key)
                 {
-                    return basket[i].data;
+                    return container[i].data;
                 }
-                if (basket[j].key==key)
+                if (container[j].key == key)
                 {
-                    return basket[j].data;
+                    return container[j].data;
                 }
             }
             throw new ArgumentException(
@@ -123,11 +127,11 @@ namespace Store
 
         private T FindByName(string name)
         {
-            for (int i = 0; i < basket.Length; i++)
+            for (int i = 0; i < container.Length; i++)
             {
-                if (basket[i].data.Name == name)
+                if (container[i].data.Name == name)
                 {
-                    return basket[i].data;
+                    return container[i].data;
                 }
             }
 
@@ -162,5 +166,62 @@ namespace Store
         //        nameof(price),
         //        $"Name {price} does not exist in container");
         //}
+        //IEnumerator IEnumerable.GetEnumerator()
+        //{
+        //    return GetEnumerator();
+        //}
+        //private IEnumerator<T> GetEnumerator()
+        //{
+        //    for (int i = 0; i < basket.Length; i++)
+        //    {
+        //        if (this[i].Name != null)
+        //        {
+        //            yield return this[i];
+        //        }
+        //    }
+        //}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        private HashTableContainerEnum<T> GetEnumerator()
+        {
+            return new HashTableContainerEnum<T>(this);
+        }
+        #region Serialization
+        public virtual void SetObjectData(BinaryReader stream)
+        {
+            while (stream.PeekChar() != -1)
+            {
+                Add((T)Serializer.Load(stream));
+            }
+        }
+        public virtual void GetObjectData(BinaryWriter stream)
+        {
+            for(int i =0;i<Count;i++)
+            {
+                Serializer.Save(stream, container[i].data);
+            }
+        }
+        #endregion
+        public T Find(finder<T> del)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (del(container[i].data))
+                {
+                    return container[i].data;
+                }
+            }
+            throw new IndexerException();
+        }
+        public IEnumerable<T> FindAll(finder<T> del)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (del(container[i].data))
+                    yield return container[i].data;
+            }
+        }
     }
 }

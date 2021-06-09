@@ -2,30 +2,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Store
 {
-    class ListContainer<T> : IEnumerable, IOrdereableContainer<T> where T: IName<T>
+    internal class Node<T>
     {
-        internal class Node
+        public Node<T> prev;
+        public Node<T> next;
+        public T data;
+        public Node(T p = default)
         {
-            public Node prev;
-            public Node next;
-            public T data;
-            public Node(T p)
-            {
-                data = p;
-            }
-            public override string ToString()
-            {
-                return data.ToString();
-            }
+            data = p;
         }
-        Node start = null;
-        Node finish = null;
+        public override string ToString()
+        {
+            return data.ToString();
+        }
+    }
+    class ListContainer<T> : IEnumerable, IOrdereableContainer<T>, ICustomSerializable where T : IName<T>, ICustomSerializable
+    {
+
+        internal Node<T> start = null;
+        internal Node<T> finish = null;
         int count = 0;
         public int Count
         {
@@ -34,7 +37,7 @@ namespace Store
         }
         public void Add(T p)
         {
-            Node node = new Node(p);
+            Node<T> node = new Node<T>(p);
             if (finish == null)
             {
                 start = node;
@@ -50,7 +53,7 @@ namespace Store
         }
         public void Add(IContainer<T> container)
         {
-            for(int i=0;i<container.Count;i++)
+            for (int i = 0; i < container.Count; i++)
             {
                 this.Add(container[i]);
             }
@@ -58,7 +61,7 @@ namespace Store
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            for (Node n = start; n != null; n = n.next)
+            for (Node<T> n = start; n != null; n = n.next)
             {
                 sb.Append(n.data.ToString()).Append("\n");
             }
@@ -91,13 +94,13 @@ namespace Store
             }
             return default;
         }
-        private Node GetElement(int index)
+        private Node<T> GetElement(int index)
         {
-            if (index<0 || index > count)
+            if (index < 0 || index > count)
                 throw new ArgumentOutOfRangeException(
                 nameof(index),
                 $"Index {index} out of range");
-            Node prom = start;
+            Node<T> prom = start;
             for (int i = 0; i < index; i++)
             {
                 prom = prom.next;
@@ -106,12 +109,12 @@ namespace Store
         }
         public void Remove(int index)
         {
-            if(index>count)
+            if (index > count)
                 throw new ArgumentException(
                     nameof(index),
                     $"Index {index} does not exist");
 
-            Node toDelete = GetElement(index);
+            Node<T> toDelete = GetElement(index);
 
             if (toDelete == start)
                 PopHead();
@@ -121,7 +124,7 @@ namespace Store
             toDelete.next.prev = toDelete.prev;
             Count--;
         }
-        private void Swap(Node a, Node b)
+        private void Swap(Node<T> a, Node<T> b)
         {
             T temp = a.data;
             a.data = b.data;
@@ -129,11 +132,11 @@ namespace Store
         }
         public void Sort()
         {
-            for(Node i=start; i.next!=null;i=i.next)
+            for (Node<T> i = start; i.next != null; i = i.next)
             {
-                for (Node j=i; j.next!=null; j=j.next)
+                for (Node<T> j = i; j.next != null; j = j.next)
                 {
-                    if (j.data.Name.CompareTo(j.next.data.Name)>0)
+                    if (j.data.Name.CompareTo(j.next.data.Name) > 0)
                     {
                         Swap(j, j.next);
                     }
@@ -147,7 +150,7 @@ namespace Store
                 PopHead();
             }
         }
-        public T this[int index] 
+        public T this[int index]
         {
             get
             {
@@ -156,13 +159,13 @@ namespace Store
         }
         private T FindByIndex(int index)
         {
-            if (index > Count|index < 0)
+            if (index > Count | index < 0)
             {
                 throw new ArgumentException(
                     nameof(index),
                     $"Index {index} out of range");
             }
-            Node prom = GetElement(index);
+            Node<T> prom = GetElement(index);
             return prom.data;
         }
         public T this[string name]
@@ -174,10 +177,10 @@ namespace Store
         }
         private T FindByName(string name)
         {
-            Node prom = start;
+            Node<T> prom = start;
             for (int i = 0; i < Count; i++)
             {
-                if (prom.data.Name==name)
+                if (prom.data.Name == name)
                 {
                     return prom.data;
                 }
@@ -216,7 +219,99 @@ namespace Store
         }
         public ListContainerEnum<T> GetEnumerator()
         {
-            return new ListContainerEnum<T>(this);
+            return new ListContainerEnum<T>(start);
+        }
+        public IEnumerable<T> InverseEnumerator()
+        {
+            for (int i = Count - 1; i >= 0; i--)
+            {
+                yield return this[i];
+            }
+        }
+        public IEnumerable<T> FilterEnumerator(string needToContain)
+        {
+            for (Node<T> i = start; i != null; i = i.next)
+            {
+                if (i.data.Name.Contains(needToContain))
+                {
+                    yield return i.data;
+                }
+            }
+        }
+        public IEnumerable<T> SortedEnumerator()
+        {
+            Node<T> lessThenToWrite = start;
+            for (Node<T> i = start; i != null; i = i.next)
+            {
+                if (lessThenToWrite.data.CompareTo(i.data) < 0)
+                {
+                    lessThenToWrite = i;
+                }
+            }
+            yield return lessThenToWrite.data;
+            Node<T> toWrite = start;
+            int n = count;
+            while (n != 0)
+            {
+                for (Node<T> i = start; i != null; i = i.next)
+                {
+                    if (i.data.CompareTo(toWrite.data) > 0 && (lessThenToWrite.data.CompareTo(i.data) > 0))
+                    {
+                        toWrite = i;
+                    }
+                }
+                yield return toWrite.data;
+                n--;
+            }
+        }
+        #region Serialization
+        public virtual void SetObjectData(BinaryReader stream)
+        {
+            while (stream.PeekChar() != -1)
+            {                
+                Add((T)Serializer.Load(stream));
+            }
+        }
+        public virtual void GetObjectData(BinaryWriter stream)
+        {
+            foreach (var t in this)
+            {
+                Serializer.Save(stream,t);
+            }
+        }
+        #endregion
+        public void Sort(CompareParam<T> del)
+        {
+            if (Count < 1) return;
+            for (Node<T> i = start; i.next != null; i = i.next)
+            {
+                for (Node<T> j = i; j.next != null; j = j.next)
+                {
+                    if (del(j.data, j.next.data))
+                    {
+                        Swap(j, j.next);
+                    }
+                }
+            }
+        }
+        public T Find(finder<T> del)
+        {
+            for (Node<T> i = start; i !=null; i=i.next)
+            {
+                if (del(i.data))
+                {
+                    return i.data;
+                }
+            }
+            throw new IndexerException();
+        }
+        public IEnumerable<T> FindAll(finder<T> del)
+        {
+            for (Node<T> i = start; i != null; i = i.next)
+            {
+                if (del(i.data))
+                    yield return i.data;
+            }
         }
     }
 }

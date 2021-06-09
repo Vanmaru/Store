@@ -1,17 +1,22 @@
 ﻿using Store.helper;
 using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Store
 {
-    class ArrayContainer<T> : IEnumerable, IOrdereableContainer<T> where T : IName<T>
+    class ArrayContainer<T> : IEnumerable<T>, IOrdereableContainer<T>, ICustomSerializable where T : IName<T>, IComparable<T>, ICustomSerializable
     {
         internal T[] data;
-        public int Count { get { return data != null ? data.Length : 0; } protected set { } }
+        public int Count { get => data != null ? data.Length : 0; protected set { } }
+        public decimal totalPrice = 0;
         public void Add(T p)
         {
             T[] tempData = new T[Count + 1];
@@ -42,7 +47,7 @@ namespace Store
                 if (i == index) { i++; }
                 temp[j++] = data[i];
             }
-
+            data = temp;
         }
         public void Add(IContainer<T> container)
         {
@@ -70,7 +75,7 @@ namespace Store
                 {
                     return data[index];
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     throw new IndexerException("Array list indexer exception", e);
                 }
@@ -102,33 +107,129 @@ namespace Store
                 nameof(name),
                 $"Name {name} does not exist in container");
         }
-        //    public Product this[decimal price]
-        //    {
-        //        get
-        //        {
-        //            return FindByPrice(price);
-        //        }
-        //    }
-        //    private Product FindByPrice(decimal price)
-        //    {
-        //        for (int j = 0; j < data.Length; j++)
-        //        {
-        //            if (data[j].Price == price)
-        //            {
-        //                return data[j];
-        //            }
-        //        }
-        //        throw new ArgumentOutOfRangeException(
-        //            nameof(price),
-        //            $"Item with price {price} was not found");
-        //    }
+        public T this[decimal price]
+        {
+            get
+            {
+                return FindByPrice(price);
+            }
+        }
+        private T FindByPrice(decimal price)
+        {
+            for (int j = 0; j < data.Length; j++)
+            {
+                if (data[j].Price == price)
+                {
+                    return data[j];
+                }
+            }
+            throw new ArgumentOutOfRangeException(
+                nameof(price),
+                $"Item with price {price} was not found");
+        }
+        #region Enumerators
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator)GetEnumerator();
+            return GetEnumerator();
         }
-        public ArrayContainerEnum<T> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return new ArrayContainerEnum<T>(this);
+        }
+
+        public IEnumerable<T> InverseEnumerator()
+        {
+            for (int i = Count - 1; i >= 0; i--)
+            {
+                yield return this[i];
+            }
+        }
+        public IEnumerable<T> FilterEnumerator(string needToContain)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (this[i].Name.Contains(needToContain))
+                {
+                    yield return this[i];
+                }
+            }
+        }
+        public IEnumerable<T> SortedEnumerator()
+        {
+            T lessThenToWrite = default;
+            for (int i = 0; i < Count; i++)
+            {
+                if (lessThenToWrite.CompareTo(data[i]) < 0)
+                {
+                    lessThenToWrite = data[i];
+                }
+            }
+            yield return lessThenToWrite;
+            T toWrite = lessThenToWrite;
+            int n = Count;
+            while (n != 0)
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    if (data[i].CompareTo(toWrite) > 0 && (lessThenToWrite.CompareTo(data[i]) > 0))
+                    {
+                        toWrite = data[i];
+                    }
+                }
+                yield return toWrite;
+                n--;
+            }
+        }
+        #endregion
+        public virtual void SetObjectData(BinaryReader stream)
+        {
+            while (stream.PeekChar() != -1)
+            {
+                Add((T)Serializer.Load(stream));
+            }
+        }
+        public virtual void GetObjectData(BinaryWriter stream)
+        {
+            foreach (var t in this)
+            {
+                Serializer.Save(stream, t);
+            }
+        }
+        public void Sort(CompareParam<T> del)
+        {
+            if (Count < 1) return;
+            for (int i = 0; i < Count - 1; i++)
+            {
+                for (int j = 0; j < Count - i - 1; j++)
+                {
+                    if (del(data[j], data[j + 1]))
+                    {
+
+                        T temp = data[j];
+                        data[j] = data[j + 1];
+                        data[j + 1] = temp;
+                    }
+                }
+            }
+        }
+        public T Find(finder<T> del)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (del(data[i]))
+                {
+                    return data[i];                    
+                }
+            }
+            throw new IndexerException();
+        }
+        public IEnumerable<T> FindAll(finder<T> del)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (del(data[i]))
+                    yield return data[i];
+            }
         }
     }
 }

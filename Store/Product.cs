@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Store.helper;
 
 namespace Store
 {
-    public abstract class Product : Object,IName, IName<Product>
+    [Serializable]
+    public abstract class Product : Object, IName, IName<Product>, ICustomSerializable
     {
         private string name;
         private decimal price;
@@ -42,7 +44,7 @@ namespace Store
 
         public virtual int CompareTo(Product other)
         {
-            
+
             int res = this.Price.CompareTo(other.Price);
             if (res == 0)
             {
@@ -54,10 +56,21 @@ namespace Store
         {
             return $"Name {name}, Price {price}";
         }
+        public virtual void SetObjectData(BinaryReader stream)
+        {
+            Name = stream.ReadString();
+            Price = stream.ReadDecimal();
+        }
+        public virtual void GetObjectData(BinaryWriter stream)
+        {
+            stream.Write(Name);
+            stream.Write(Price);
+        }
     }
-    public class VideoGame:Product, IName, IName<VideoGame>
+    [Serializable]
+    public class VideoGame : Product, IName, IName<VideoGame>, ICustomSerializable
     {
-        public VideoGame(string name, decimal price, string platform, string genre) : base(name, price)
+        public VideoGame(string name, decimal price, string platform = "PC", string genre = "RPG") : base(name, price)
         {
             this.Platform = platform;
             this.Genre = genre;
@@ -99,7 +112,7 @@ namespace Store
             if (res == 0)
                 res = this.platform.CompareTo((obj as VideoGame).platform);
             if (res == 0)
-                res = this.genre.CompareTo((obj  as VideoGame).genre);
+                res = this.genre.CompareTo((obj as VideoGame).genre);
             return res;
         }
 
@@ -110,12 +123,28 @@ namespace Store
                 res = this.platform.CompareTo(other.platform);
             if (res == 0)
                 res = this.genre.CompareTo(other.genre);
-            throw new NotImplementedException();
+            return res;
+        }
+        public override void SetObjectData(BinaryReader stream)
+        {
+            base.SetObjectData(stream);
+            Genre = stream.ReadString();
+            platform = stream.ReadString();
+        }
+        public override void GetObjectData(BinaryWriter stream)
+        {
+            base.GetObjectData(stream);
+            stream.Write(Genre);
+            stream.Write(Platform);
         }
     }
-
-    public class BoardGame : Product, IName, IName<BoardGame>
+    [Serializable]
+    public class BoardGame : Product, IName, IName<BoardGame>, ICustomSerializable
     {
+        public BoardGame() : base()
+        {
+
+        }
         public BoardGame(string name, decimal price, string kind, string attributes) : base(name, price)
         {
             this.Kind = kind;
@@ -167,11 +196,28 @@ namespace Store
                 res = this.kind.CompareTo(other.kind);
             if (res == 0)
                 res = this.attributes.CompareTo(other.attributes);
-            throw new NotImplementedException();
+            return res;
+        }
+        public override void SetObjectData(BinaryReader stream)
+        {
+            base.SetObjectData(stream);
+            Kind = stream.ReadString();
+            Attributes = stream.ReadString();
+        }
+        public override void GetObjectData(BinaryWriter stream)
+        {
+            base.GetObjectData(stream);
+            stream.Write(Kind);
+            stream.Write(Attributes);
         }
     }
-    public class BoardGameForAdult : BoardGame, IName, IName<BoardGameForAdult>
+    [Serializable]
+    public class BoardGameForAdult : BoardGame, IName, IName<BoardGameForAdult>, ICustomSerializable
     {
+        public BoardGameForAdult() : base()
+        {
+
+        }
         public BoardGameForAdult(string name, decimal price, string kind, string attributes, bool isGambling) : base(name, price, kind, attributes)
         {
             this.IsGambling = isGambling;
@@ -204,12 +250,26 @@ namespace Store
             int res = base.CompareTo(other);
             if (res == 0)
                 res = this.isGambling.CompareTo(other.isGambling);
-            throw new NotImplementedException();
+            return res;
+        }
+        public override void SetObjectData(BinaryReader stream)
+        {
+            base.SetObjectData(stream);
+            IsGambling = stream.ReadBoolean();
+        }
+        public override void GetObjectData(BinaryWriter stream)
+        {
+            base.GetObjectData(stream);
+            stream.Write(IsGambling);
         }
     }
-
-    public class BoardGameForKids : BoardGame, IName, IName<BoardGameForKids>
+    [Serializable]
+    public class BoardGameForKids : BoardGame, IName, IName<BoardGameForKids>, ICustomSerializable
     {
+        public BoardGameForKids() : base()
+        {
+
+        }
         public BoardGameForKids(string name, decimal price, string kind, string attributes, string goal) : base(name, price, kind, attributes)
         {
             this.Goal = goal;
@@ -235,11 +295,25 @@ namespace Store
         {
             throw new NotImplementedException();
         }
+        public override void SetObjectData(BinaryReader stream)
+        {
+            base.SetObjectData(stream);
+            Goal = stream.ReadString();
+        }
+        public override void GetObjectData(BinaryWriter stream)
+        {
+            base.GetObjectData(stream);
+            stream.Write(Goal);
+        }
     }
-
-    public class SingleVideoGame : VideoGame, IName, IName<SingleVideoGame>
+    [Serializable]
+    public class SingleVideoGame : VideoGame, IName, IName<SingleVideoGame>, ICustomSerializable
     {
-        public SingleVideoGame(string name, decimal price, string platform, string genre, int plotDuration) : base(name, price, platform, genre)
+        public SingleVideoGame() : base("SingleVideoGame", 10)
+        {
+
+        }
+        public SingleVideoGame(string name, decimal price, string platform, string genre, int plotDuration = 10) : base(name, price, platform, genre)
         {
             this.PlotDuration = plotDuration;
         }
@@ -266,10 +340,24 @@ namespace Store
         {
             throw new NotImplementedException();
         }
+        public override void SetObjectData(BinaryReader stream)
+        {
+            base.SetObjectData(stream);
+            PlotDuration = stream.ReadInt32();
+        }
+        public override void GetObjectData(BinaryWriter stream)
+        {
+            base.GetObjectData(stream);
+            stream.Write(PlotDuration);
+        }
     }
-
-    public class MultiVideoGame : VideoGame, IName, IName<MultiVideoGame>
+    [Serializable]
+    public class MultiVideoGame : VideoGame, IName, IName<MultiVideoGame>, ICustomSerializable
     {
+        public MultiVideoGame() : base("MultiVideoGame", 10)
+        {
+
+        }
         public MultiVideoGame(string name, decimal price, string platform, string genre, string typeOfMultiplayer) : base(name, price, platform, genre)
         {
             this.TypeOfMultiplayer = typeOfMultiplayer;
@@ -294,6 +382,16 @@ namespace Store
         public int CompareTo(MultiVideoGame other)
         {
             throw new NotImplementedException();
+        }
+        public override void SetObjectData(BinaryReader stream)
+        {
+            base.SetObjectData(stream);
+            TypeOfMultiplayer = stream.ReadString();
+        }
+        public override void GetObjectData(BinaryWriter stream)
+        {
+            base.GetObjectData(stream);
+            stream.Write(TypeOfMultiplayer);
         }
     }
 }

@@ -6,18 +6,22 @@ namespace Store.helper
 {
     public class ListContainerEnum<T> : IEnumerator<T> where T : IName<T>, IComparable<T>
     {
-        private ListContainer<T> container;
-        int position =-1;
-        internal ListContainerEnum(ListContainer<T> container)
-        { this.container = container; }
+        Node<T> reset;
+        Node<T> position;
+        internal ListContainerEnum(Node<T> start)
+        {
+            reset = new Node<T>() { next = start };
+            position = reset;
+
+        }
         public bool MoveNext()
         {
-            position ++;
-            return (position < container.Count);
+            position = position.next;
+            return (position != null);
         }
         public void Reset()
         {
-            position = -1;
+            position = reset;
         }
 
         public void Dispose()
@@ -35,7 +39,7 @@ namespace Store.helper
         {
             get
             {
-                return container[position];
+                return position.data;
             }
         }
     }

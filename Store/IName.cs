@@ -12,10 +12,18 @@ namespace Store
         {
             get;
         }
+        decimal Price
+        {
+            get;
+        }
     }
     public interface IName<T>:IComparable<T>
     {
         string Name
+        {
+            get;
+        }
+        decimal Price
         {
             get;
         }

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Store.helper
 {
-    public class ArrayContainerEnum<T> : IEnumerator<T> where T : IName<T>, IComparable<T>
+    public class ArrayContainerEnum<T> : IEnumerator<T> where T : IName<T>, IComparable<T>, ICustomSerializable
     {
-        private ArrayContainer<T> container;
+        private readonly ArrayContainer<T> container;
         int position = -1;
         internal ArrayContainerEnum(ArrayContainer<T> container)
         { this.container = container; }

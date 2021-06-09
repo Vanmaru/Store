@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Store.helper
 {
-    class HashTableContainerEnum<T> : IEnumerator<T> where T : IName<T>, IComparable<T>
+    class HashTableContainerEnum<T> : IEnumerator<T> where T : IName<T>, IComparable<T>, ICustomSerializable
     {
         private HashTableContainer<T> container;
         int position = -1;
@@ -15,7 +15,10 @@ namespace Store.helper
         { this.container = container; }
         public bool MoveNext()
         {
-            position++;
+            do
+            {
+                position++;
+            } while (container[position].Name == default);
             return (position < container.Count);
         }
         public void Reset()
