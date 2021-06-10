@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayContainer.cs" />
-    <Compile Include="helper\ContainerEventArgs.cs" />
+    <Compile Include="helper\PriceUpdateEventArgs.cs" />
     <Compile Include="helper\ArrayContainerEnum.cs" />
     <Compile Include="helper\Delegates.cs" />
     <Compile Include="helper\ListContainerEnum.cs" />

@@ -12,8 +12,6 @@ namespace Store.helper
         public NegativeValueException(string message) : base(message) { }
         public NegativeValueException(string Message, Exception inner) : base(Message, inner) { }
     }
-
-
     class IndexerException : Exception
     {
         public IndexerException() : base("Indexer exception.") { }

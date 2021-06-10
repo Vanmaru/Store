@@ -16,7 +16,8 @@ namespace Store
     class HashTableContainer<T> : IEnumerable, IContainer<T>, ICustomSerializable where T : IName<T>, ICustomSerializable
     {
         int count = 0;
-
+        public decimal totalPrice = 0;
+        public decimal TotalPrice { get => totalPrice; protected set => totalPrice = value; }
         private HashNode<T>[] container;
         public HashTableContainer(int size)
         {
@@ -51,7 +52,8 @@ namespace Store
             if (container.Length == count)
                 throw new helper.OverflowException(
                 $"Count of elements {container.Length}. Hash-table overflow");
-
+            p.PriceUpdate += PriceUpdate;
+            TotalPrice += p.Price;
             HashNode<T> prodToAdd;
             prodToAdd.data = p;
             prodToAdd.key = Hash(p);
@@ -222,6 +224,10 @@ namespace Store
                 if (del(container[i].data))
                     yield return container[i].data;
             }
+        }
+        protected virtual void PriceUpdate(object sender, PriceUpdateEventArgs e)
+        {
+            TotalPrice += e.Price;
         }
     }
 }

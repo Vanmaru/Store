@@ -17,8 +17,14 @@ namespace Store
         internal T[] data;
         public int Count { get => data != null ? data.Length : 0; protected set { } }
         public decimal totalPrice = 0;
+        public decimal TotalPrice { get => totalPrice; protected set => totalPrice = value; }
+        public event PriceUpdateHandler<PriceUpdateEventArgs> TotalPriceUpdate;
         public void Add(T p)
         {
+            //p.PriceUpdate += helper.PriceUpdate;
+            //TotalPriceUpdate?.Invoke(this, e);
+            p.PriceUpdate += PriceUpdate;
+            TotalPrice += p.Price;
             T[] tempData = new T[Count + 1];
             for (int i = 0; i < Count; i++)
                 tempData[i] = data[i];
@@ -40,9 +46,10 @@ namespace Store
                 throw new ArgumentException(
                 nameof(index),
                 $"Index {index} out of array range");
-
+            this[index].PriceUpdate -= PriceUpdate;
+            TotalPrice -= this[index].Price;
             T[] temp = new T[Count - 1];
-            for (int i = 0, j = 0; i < data.Length; i++)
+            for (int i = 0, j = 0; i < data.Length-1; i++)
             {
                 if (i == index) { i++; }
                 temp[j++] = data[i];
@@ -85,13 +92,14 @@ namespace Store
                 data[index] = value;
             }
         }
-        public T this[string name]
-        {
-            get
-            {
-                return FindByName(name);
-            }
-        }
+        #region Indexers
+        public T this[string name] => FindByName(name);
+        //{
+        //    get
+        //    {
+        //        return FindByName(name);
+        //    }
+        //}
 
         private T FindByName(string name)
         {
@@ -127,6 +135,7 @@ namespace Store
                 nameof(price),
                 $"Item with price {price} was not found");
         }
+        #endregion
         #region Enumerators
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -181,6 +190,7 @@ namespace Store
             }
         }
         #endregion
+        #region Serialization
         public virtual void SetObjectData(BinaryReader stream)
         {
             while (stream.PeekChar() != -1)
@@ -195,6 +205,7 @@ namespace Store
                 Serializer.Save(stream, t);
             }
         }
+        #endregion
         public void Sort(CompareParam<T> del)
         {
             if (Count < 1) return;
@@ -218,7 +229,7 @@ namespace Store
             {
                 if (del(data[i]))
                 {
-                    return data[i];                    
+                    return data[i];
                 }
             }
             throw new IndexerException();
@@ -229,6 +240,42 @@ namespace Store
             {
                 if (del(data[i]))
                     yield return data[i];
+            }
+        }
+        protected virtual void PriceUpdate(object sender, PriceUpdateEventArgs e)
+        {
+            TotalPrice += e.Price;
+        }
+        public IEnumerable<T> MaxPrice()
+        {
+            var result = (from prod in this
+                          where prod.Price == ((from t in this select t).Max((p) => p.Price))
+                          select prod);
+            foreach (T item in result)
+            {
+                yield return item;
+            }
+        }
+        public IEnumerable<T> MinPrice()
+        {
+            var result =
+                (from prod in this
+                 where prod.Price == ((from t in this select t).Min((p) => p.Price))
+                 select prod);
+            foreach (T item in result)
+            {
+                yield return item;
+            }
+        }
+        public IEnumerable Average()
+        {
+            var items =
+                (from prod in this
+                 group prod by prod.GetType().Name into types
+                 select new { keys = types.Key, averages = types.Average((p) => p.Price) });
+            foreach (var item in items)
+            {
+                yield return item;
             }
         }
     }

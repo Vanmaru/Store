@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Store.helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace Store
 {
     public interface IName : IComparable
     {
+        event PriceUpdateHandler<PriceUpdateEventArgs> PriceUpdate;
         string Name
         {
             get;
@@ -19,6 +21,7 @@ namespace Store
     }
     public interface IName<T>:IComparable<T>
     {
+        event PriceUpdateHandler<PriceUpdateEventArgs> PriceUpdate;
         string Name
         {
             get;

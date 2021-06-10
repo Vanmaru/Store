@@ -20,13 +20,11 @@ namespace Store.helper
                 }
             }
         }
-
         public static void Save(BinaryWriter writer, ICustomSerializable objToSerialize)
         {
             writer.Write(objToSerialize.GetType().FullName);
             objToSerialize.GetObjectData(writer);
         }
-
         public static ICustomSerializable Load(string filePath)
         {
             using (FileStream stream = new FileStream(filePath, FileMode.Open))

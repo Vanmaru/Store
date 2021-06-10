@@ -35,8 +35,12 @@ namespace Store
             get { return count; }
             protected set { if (value >= 0) count = value; }
         }
+        public decimal totalPrice = 0;
+        public decimal TotalPrice { get => totalPrice; protected set => totalPrice = value; }
         public void Add(T p)
         {
+            p.PriceUpdate += PriceUpdate;
+            TotalPrice += p.Price;
             Node<T> node = new Node<T>(p);
             if (finish == null)
             {
@@ -268,7 +272,7 @@ namespace Store
         public virtual void SetObjectData(BinaryReader stream)
         {
             while (stream.PeekChar() != -1)
-            {                
+            {
                 Add((T)Serializer.Load(stream));
             }
         }
@@ -276,7 +280,7 @@ namespace Store
         {
             foreach (var t in this)
             {
-                Serializer.Save(stream,t);
+                Serializer.Save(stream, t);
             }
         }
         #endregion
@@ -296,7 +300,7 @@ namespace Store
         }
         public T Find(finder<T> del)
         {
-            for (Node<T> i = start; i !=null; i=i.next)
+            for (Node<T> i = start; i != null; i = i.next)
             {
                 if (del(i.data))
                 {
@@ -313,5 +317,41 @@ namespace Store
                     yield return i.data;
             }
         }
+        protected virtual void PriceUpdate(object sender, PriceUpdateEventArgs e)
+        {
+            TotalPrice += e.Price;
+        }
+        //public IEnumerable<T> MaxPrice()
+        //{
+        //    var result = (from prod in this
+        //                  where prod.Price == ((from t in this select t).Max((p) => p.Price))
+        //                  select prod);
+        //    foreach (T item in result)
+        //    {
+        //        yield return item;
+        //    }
+        //}
+        //public IEnumerable<T> MinPrice()
+        //{
+        //    var result =
+        //        (from prod in this
+        //         where prod.Price == ((from t in this select t).Min((p) => p.Price))
+        //         select prod);
+        //    foreach (T item in result)
+        //    {
+        //        yield return item;
+        //    }
+        //}
+        //public IEnumerable Average()
+        //{
+        //    var items =
+        //        (from prod in this
+        //         group prod by prod.GetType().Name into types
+        //         select new { keys = types.Key, averages = types.Average((p) => p.Price) });
+        //    foreach (var item in items)
+        //    {
+        //        yield return item;
+        //    }
+        //}
     }
 }

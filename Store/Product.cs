@@ -7,9 +7,14 @@ using Store.helper;
 
 namespace Store
 {
-    [Serializable]
-    public abstract class Product : Object, IName, IName<Product>, ICustomSerializable
+    public abstract class Product : IName, IName<Product>, ICustomSerializable
     {
+        public event PriceUpdateHandler<PriceUpdateEventArgs> PriceUpdate;
+        protected virtual void PriceUpdateEvent(PriceUpdateEventArgs e)
+        {
+            PriceUpdateHandler<PriceUpdateEventArgs> handler = PriceUpdate;
+            handler?.Invoke(this, e);
+        }
         private string name;
         private decimal price;
 
@@ -33,7 +38,11 @@ namespace Store
                     throw new NegativeValueException("negative price value");
                 return price;
             }
-            set { price = value; }
+            set
+            {
+                PriceUpdateEvent(new PriceUpdateEventArgs(value - price));
+                price = value;
+            }
         }
         // by price, then by name
         public virtual int CompareTo(object obj)

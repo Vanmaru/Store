@@ -10,7 +10,7 @@ namespace Store
         static void Main(string[] args)
         {
             SingleVideoGame firstGame = new SingleVideoGame("Dark Souls", 404, "PC", "RPG", 60);
-            MultiVideoGame secondGame = new MultiVideoGame("Valorant", 0, "PC", "FPS-shooter", "5vs5");
+            MultiVideoGame secondGame = new MultiVideoGame("Valorant", 10, "PC", "FPS-shooter", "5vs5");
             BoardGameForAdult firstBoardGame = new BoardGameForAdult("Poker", 1680, "Card-game", "Cards&chips", true);
             BoardGameForKids secondBoardGame = new BoardGameForKids("Monopoly", 50, "Game with field", "Field&cube", "Education&Entertaiment");
 
@@ -26,19 +26,25 @@ namespace Store
                 firstGame,
                 secondGame,
                 firstBoardGame,
-                secondBoardGame
+                secondBoardGame,
+                new SingleVideoGame("Dark Souls 3", 1680, "PC", "RPG", 100),
+                new SingleVideoGame("The Long Dark", 1680, "PC", "Survival", 80)
             };
-            foreach (var item in kr)
+            foreach (var item in kr.MaxPrice())
             {
                 Console.WriteLine(item);
             }
+            //Console.WriteLine(kr.TotalPrice);
+            //firstGame.Price = 1000000;
 
-            kr.Sort((first, second) => (first.Price> second.Price ));
-            Console.WriteLine(kr.ToString());
+            //Console.WriteLine(kr.ToString());
+            
+            //kr.Sort((first, second) => (first.Price> second.Price ));
+            //Console.WriteLine(kr.ToString());
 
-            kr.Sort((first, second) => first.Price > second.Price);
-            Console.WriteLine(kr.ToString());
-            Console.WriteLine(kr.Find((a) => a.Name.Contains("Poker")));
+            //kr.Sort((first, second) => first.Price > second.Price);
+            //Console.WriteLine(kr.ToString());
+            //Console.WriteLine(kr.Find((a) => a.Name.Contains("Poker")));
             //Serializer.Save("test.bin", kr);
             //var t = Serializer.Load("test.bin");
 
